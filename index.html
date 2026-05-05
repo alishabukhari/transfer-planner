@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Program Transfer Planner</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 60%;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+        }
+        button {
+            padding: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Computer Engineering</h1>
+
+<h3>Select Target Program:</h3>
+<select id="program">
+    <option>Computer Science</option>
+    <option>Civil Engineering</option>
+    <option>Electrical and Electronics Engineering</option>
+</select>
+
+<br>
+<button onclick="transfer()">Transfer</button>
+
+<h2>Your Courses</h2>
+<table id="courseTable">
+    <tr>
+        <th>Course</th>
+        <th>Passed</th>
+    </tr>
+</table>
+
+<h2>Equivalency Table</h2>
+<table id="resultTable"></table>
+
+<script>
+
+// ---------------- COURSES ----------------
+let courses = [
+    {name: "Mathematics I", passed: "Yes"},
+    {name: "Physics I", passed: "Yes"},
+    {name: "Programming Fundamentals", passed: "Yes"},
+    {name: "Digital Logic Design", passed: "No"},
+    {name: "Data Structures", passed: "Yes"},
+
+    // extra 5 courses (always Yes)
+    {name: "Artificial Intelligence", passed: "Yes"},
+    {name: "Machine Learning", passed: "Yes"},
+    {name: "Computer Networks", passed: "Yes"},
+    {name: "Operating Systems", passed: "Yes"},
+    {name: "Database Systems", passed: "Yes"}
+];
+
+// ---------------- LOAD TABLE ----------------
+let table = document.getElementById("courseTable");
+
+courses.forEach(c => {
+    let row = table.insertRow();
+    row.insertCell(0).innerText = c.name;
+    row.insertCell(1).innerText = c.passed;
+});
+
+// ---------------- TRANSFER FUNCTION ----------------
+function transfer() {
+    let result = document.getElementById("resultTable");
+    result.innerHTML = "";
+
+    let header = result.insertRow();
+    header.insertCell(0).innerText = "Your Course";
+    header.insertCell(1).innerText = "Equivalent Course";
+
+    courses.forEach(c => {
+        if (c.passed === "Yes") {
+            let row = result.insertRow();
+            row.insertCell(0).innerText = c.name;
+
+            let equivalent = getEquivalent(c.name);
+            row.insertCell(1).innerText = equivalent;
+        }
+    });
+}
+
+// ---------------- EQUIVALENCY LOGIC ----------------
+function getEquivalent(course) {
+
+    if (course.includes("Math")) return "Engineering Mathematics";
+    if (course.includes("Physics")) return "Applied Physics";
+    if (course.includes("Programming")) return "Intro to Programming";
+    if (course.includes("Data Structures")) return "Data Structures";
+    if (course.includes("Artificial Intelligence")) return "Artificial Intelligence";
+    if (course.includes("Machine Learning")) return "Machine Learning";
+    if (course.includes("Networks")) return "Computer Networks";
+
+    return "N/A";
+}
+
+</script>
+
+</body>
+</html>
