@@ -5,61 +5,150 @@
 
     <style>
         body {
-            font-family: Arial;
-            padding: 20px;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #1e3c72, #2a5298);
+            color: #fff;
+            padding: 30px;
         }
+
+        h1 {
+            text-align: center;
+        }
+
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        select, button {
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            margin-top: 10px;
+        }
+
+        select {
+            width: 250px;
+        }
+
+        button {
+            background: #00c6ff;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #0072ff;
+        }
+
         table {
             border-collapse: collapse;
-            width: 60%;
+            width: 100%;
             margin-top: 20px;
+            background: white;
+            color: black;
+            border-radius: 10px;
+            overflow: hidden;
         }
+
+        th {
+            background: #0072ff;
+            color: white;
+        }
+
         th, td {
-            border: 1px solid black;
-            padding: 8px;
-        }
-        button {
             padding: 10px;
-            margin-top: 10px;
+            text-align: left;
+        }
+
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        .section {
+            margin-top: 30px;
         }
     </style>
 </head>
 
 <body>
 
-<h1>Computer Engineering</h1>
+<h1 id="mainTitle">🎓 Computer Engineering Transfer Planner</h1>
 
-<h3>Select Target Program:</h3>
-<select id="program">
-    <option>Computer Science</option>
-    <option>Civil Engineering</option>
-    <option>Electrical and Electronics Engineering</option>
-</select>
+<div class="container">
 
-<br>
-<button onclick="transfer()">Transfer</button>
+    <h3>Select Target Program:</h3>
 
-<h2>Your Courses</h2>
-<table id="courseTable">
-    <tr>
-        <th>Course</th>
-        <th>Passed</th>
-    </tr>
-</table>
+    <select id="program">
+        <option>Computer Engineering</option>
+        <option>Computer Science</option>
+        <option>Civil Engineering</option>
+        <option>Electrical and Electronics Engineering</option>
+    </select>
 
-<h2>Equivalency Table</h2>
-<table id="resultTable"></table>
+    <br>
+    <button onclick="transfer()">🔄 Transfer</button>
+
+    <div class="section">
+        <h2>Your Courses</h2>
+        <table id="courseTable">
+            <tr>
+                <th>Course</th>
+                <th>Passed</th>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Equivalency Table</h2>
+        <table id="resultTable"></table>
+    </div>
+
+</div>
 
 <script>
 
-// ---------------- COURSES ----------------
-let courses = [
-    {name: "Mathematics I", passed: "Yes"},
-    {name: "Physics I", passed: "Yes"},
-    {name: "Programming Fundamentals", passed: "Yes"},
-    {name: "Digital Logic Design", passed: "No"},
-    {name: "Data Structures", passed: "Yes"},
+// ---------------- PROGRAM-WISE COURSES ----------------
+let programCourses = {
 
-    // extra 5 courses (always Yes)
+    "Computer Engineering": [
+        {name: "Mathematics I", passed: "Yes"},
+        {name: "Physics I", passed: "Yes"},
+        {name: "Programming Fundamentals", passed: "Yes"},
+        {name: "Digital Logic Design", passed: "No"},
+        {name: "Data Structures", passed: "Yes"}
+    ],
+
+    "Computer Science": [
+        {name: "Discrete Mathematics", passed: "Yes"},
+        {name: "Programming I", passed: "Yes"},
+        {name: "Algorithms", passed: "Yes"},
+        {name: "Software Engineering", passed: "No"},
+        {name: "Database Systems", passed: "Yes"}
+    ],
+
+    "Civil Engineering": [
+        {name: "Engineering Mechanics", passed: "Yes"},
+        {name: "Structural Analysis", passed: "Yes"},
+        {name: "Fluid Mechanics", passed: "No"},
+        {name: "Construction Materials", passed: "Yes"},
+        {name: "Surveying", passed: "Yes"}
+    ],
+
+    "Electrical and Electronics Engineering": [
+        {name: "Circuit Analysis", passed: "Yes"},
+        {name: "Electromagnetics", passed: "Yes"},
+        {name: "Signals and Systems", passed: "No"},
+        {name: "Control Systems", passed: "Yes"},
+        {name: "Microprocessors", passed: "Yes"}
+    ]
+};
+
+// ---------------- COMMON EXTRA COURSES (ALWAYS YES) ----------------
+let extraCourses = [
     {name: "Artificial Intelligence", passed: "Yes"},
     {name: "Machine Learning", passed: "Yes"},
     {name: "Computer Networks", passed: "Yes"},
@@ -67,36 +156,79 @@ let courses = [
     {name: "Database Systems", passed: "Yes"}
 ];
 
-// ---------------- LOAD TABLE ----------------
-let table = document.getElementById("courseTable");
+// ---------------- LOAD COURSES ----------------
+function loadCourses() {
 
-courses.forEach(c => {
-    let row = table.insertRow();
-    row.insertCell(0).innerText = c.name;
-    row.insertCell(1).innerText = c.passed;
+    let selectedProgram = document.getElementById("program").value;
+    let table = document.getElementById("courseTable");
+
+    // clear table except header
+    table.innerHTML = "<tr><th>Course</th><th>Passed</th></tr>";
+
+    let courses = programCourses[selectedProgram];
+
+    // add main courses
+    courses.forEach(c => {
+        let row = table.insertRow();
+        row.insertCell(0).innerText = c.name;
+
+        let statusCell = row.insertCell(1);
+        statusCell.innerText = c.passed;
+        statusCell.style.color = c.passed === "Yes" ? "green" : "red";
+    });
+
+    // add extra 5 courses (always Yes)
+    extraCourses.forEach(c => {
+        let row = table.insertRow();
+        row.insertCell(0).innerText = c.name;
+
+        let statusCell = row.insertCell(1);
+        statusCell.innerText = "Yes";
+        statusCell.style.color = "green";
+    });
+}
+
+// ---------------- UPDATE TITLE + LOAD COURSES ----------------
+let programSelect = document.getElementById("program");
+let title = document.getElementById("mainTitle");
+
+programSelect.addEventListener("change", function () {
+    let selectedProgram = programSelect.value;
+
+    // update title
+    title.innerText = "🎓 " + selectedProgram + " Transfer Planner";
+
+    // reload courses
+    loadCourses();
 });
 
-// ---------------- TRANSFER FUNCTION ----------------
+// ---------------- TRANSFER ----------------
 function transfer() {
+
+    let selectedProgram = document.getElementById("program").value;
+
+    // update title again (safe)
+    document.getElementById("mainTitle").innerText =
+        "🎓 " + selectedProgram + " Transfer Planner";
+
     let result = document.getElementById("resultTable");
     result.innerHTML = "";
 
     let header = result.insertRow();
-    header.insertCell(0).innerText = "Your Course";
-    header.insertCell(1).innerText = "Equivalent Course";
+    header.innerHTML = "<th>Your Course</th><th>Equivalent Course</th>";
+
+    let courses = programCourses[selectedProgram].concat(extraCourses);
 
     courses.forEach(c => {
         if (c.passed === "Yes") {
             let row = result.insertRow();
             row.insertCell(0).innerText = c.name;
-
-            let equivalent = getEquivalent(c.name);
-            row.insertCell(1).innerText = equivalent;
+            row.insertCell(1).innerText = getEquivalent(c.name);
         }
     });
 }
 
-// ---------------- EQUIVALENCY LOGIC ----------------
+// ---------------- LOGIC ----------------
 function getEquivalent(course) {
 
     if (course.includes("Math")) return "Engineering Mathematics";
@@ -106,9 +238,13 @@ function getEquivalent(course) {
     if (course.includes("Artificial Intelligence")) return "Artificial Intelligence";
     if (course.includes("Machine Learning")) return "Machine Learning";
     if (course.includes("Networks")) return "Computer Networks";
+    if (course.includes("Operating Systems")) return "Operating Systems";
 
     return "N/A";
 }
+
+// ---------------- INITIAL LOAD ----------------
+loadCourses();
 
 </script>
 
